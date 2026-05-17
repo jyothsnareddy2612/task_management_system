@@ -66,6 +66,9 @@ class TaskService:
         update_data = payload.model_dump(exclude_unset=True)
         if actor.role == UserRole.WORKER:
             update_data = {"status": update_data.get("status")} if "status" in update_data else {}
+        new_status = update_data.get("status")
+        if isinstance(new_status, TaskStatus):
+            self._validate_status_transition(old_status, new_status)
         for field, value in update_data.items():
             setattr(task, field, value)
 
@@ -103,3 +106,14 @@ class TaskService:
     def _require_admin(self, actor: User) -> None:
         if actor.role != UserRole.ADMIN:
             raise PermissionDeniedError("Admin role required")
+
+    def _validate_status_transition(self, old_status: TaskStatus, new_status: TaskStatus) -> None:
+        allowed_transitions = {
+            TaskStatus.TODO: {TaskStatus.TODO, TaskStatus.IN_PROGRESS},
+            TaskStatus.IN_PROGRESS: {TaskStatus.IN_PROGRESS, TaskStatus.DONE},
+            TaskStatus.DONE: {TaskStatus.DONE},
+        }
+        if new_status not in allowed_transitions[old_status]:
+            raise PermissionDeniedError(
+                f"Invalid status transition: {old_status} cannot move to {new_status}"
+            )

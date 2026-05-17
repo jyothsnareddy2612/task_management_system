@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Task API Fetch Demo</title>
+  </head>
+  <body>
+    <h1>Task API Fetch Demo</h1>
+    <label>
+      Access token
+      <input id="token" style="width: 700px" />
+    </label>
+    <button id="load">Load tasks</button>
+    <pre id="output"></pre>
+    <script>
+      document.getElementById("load").addEventListener("click", async () => {
+        const token = document.getElementById("token").value;
+        const output = document.getElementById("output");
+        output.textContent = "Loading...";
+        try {
+          const response = await fetch("http://localhost:8000/api/v1/tasks", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const body = await response.json();
+          output.textContent = JSON.stringify({ status: response.status, body }, null, 2);
+        } catch (error) {
+          output.textContent = String(error);
+        }
+      });
+    </script>
+  </body>
+</html>
+

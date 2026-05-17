@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Task WebSocket Demo</title>
+  </head>
+  <body>
+    <h1>Task WebSocket Demo</h1>
+    <button id="connect">Connect</button>
+    <pre id="events"></pre>
+    <script>
+      document.getElementById("connect").addEventListener("click", () => {
+        const events = document.getElementById("events");
+        const socket = new WebSocket("ws://localhost:8000/api/v1/ws/tasks");
+        socket.onopen = () => (events.textContent += "connected\n");
+        socket.onmessage = (event) => (events.textContent += `${event.data}\n`);
+        socket.onerror = () => (events.textContent += "socket error\n");
+        socket.onclose = () => (events.textContent += "closed\n");
+      });
+    </script>
+  </body>
+</html>
+
