@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: uvicorn",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["src.main:app", "--reload", "--host", "127.0.0.1", "--port", "8000"],
+      "jinja": true,
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Streamlit",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "streamlit",
+      "args": ["run", "src/frontend/streamlit_app.py"],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Pytest",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests", "-q"],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ]
+}
