@@ -13,7 +13,7 @@ config = context.config
 config.set_main_option("sqlalchemy.url", get_settings().database_url)
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
-target_metadata = Base.metadata
+target_metadata = Base.metadata #load all current orm models
 
 
 def do_run_migrations(connection: object) -> None:

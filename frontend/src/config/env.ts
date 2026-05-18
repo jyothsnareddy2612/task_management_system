@@ -1,0 +1,7 @@
+const defaultApiBaseUrl = "http://localhost:8000/api/v1";
+const defaultAuthBaseUrl = "http://localhost:8001/api/v1";
+
+export const env = {
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL ?? defaultApiBaseUrl,
+  authBaseUrl: import.meta.env.VITE_AUTH_BASE_URL ?? defaultAuthBaseUrl,
+};

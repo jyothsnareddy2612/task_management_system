@@ -21,17 +21,20 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
-    cors_origins: list[str | AnyUrl] = ["http://localhost:8501"]
+    cors_origins: list[str | AnyUrl] = ["http://localhost:5173"]
     google_oauth_client_id: str | None = None
     google_oauth_client_secret: SecretStr | None = None
-    google_oauth_redirect_uri: str = "http://localhost:8000/api/v1/auth/google/callback"
-    oauth_success_redirect_url: str | None = None
+    google_oauth_redirect_uri: str = "http://localhost:8001/api/v1/auth/google/callback"
+    oauth_success_redirect_url: str | None = "http://localhost:5173"
     google_admin_emails: list[str] = []
 
     @property
     def is_production(self) -> bool:
         return self.environment == "prod"
+#Problem Without Cache
 
+#Every dependency injection call:
+#creates new Settings instance.
 
 @lru_cache
 def get_settings() -> Settings:

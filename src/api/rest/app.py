@@ -25,6 +25,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    #FastAPI middleware executes:reverse order
     app.add_middleware(ErrorHandlerMiddleware)
     app.add_middleware(MetricsMiddleware)
     app.add_middleware(AccessLogMiddleware)

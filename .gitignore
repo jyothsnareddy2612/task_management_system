@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
-pytest-cache-files-*/
 .mypy_cache/
 .ruff_cache/
 .env.local
@@ -11,3 +10,4 @@ htmlcov/
 dist/
 build/
 .env
+

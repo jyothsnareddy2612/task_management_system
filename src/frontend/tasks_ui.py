@@ -8,6 +8,11 @@ from src.frontend.api_client import ApiClient
 
 STATUSES = ["TODO", "IN_PROGRESS", "DONE"]
 PRIORITIES = ["LOW", "MEDIUM", "HIGH", "URGENT"]
+NEXT_STATUSES = {
+    "TODO": ["TODO", "IN_PROGRESS"],
+    "IN_PROGRESS": ["IN_PROGRESS", "DONE"],
+    "DONE": ["DONE"],
+}
 
 
 def safe_request(label: str, fn: Any) -> requests.Response | None:
@@ -36,15 +41,6 @@ def iso_due_date(selected_date: date | None) -> str | None:
 
 
 def render_comments(client: ApiClient, task_id: str) -> None:
-    response = safe_request("Loading comments", lambda: client.list_comments(task_id))
-    if response and response.ok:
-        comments = response.json()
-        if comments:
-            for comment in comments:
-                st.write(comment["content"])
-                st.caption(f"By {comment['user_id']} at {comment['created_at']}")
-        else:
-            st.caption("No comments yet.")
     comment = st.text_area("Add comment", key=f"comment-{task_id}", height=80)
     if st.button("Post comment", key=f"post-comment-{task_id}"):
         created = safe_request("Adding comment", lambda: client.add_comment(task_id, comment))
@@ -53,9 +49,22 @@ def render_comments(client: ApiClient, task_id: str) -> None:
             st.rerun()
         elif created:
             st.error(created.text)
+    if st.button("Load comments", key=f"load-comments-{task_id}"):
+        response = safe_request("Loading comments", lambda: client.list_comments(task_id))
+        if response and response.ok:
+            comments = response.json()
+            if comments:
+                for comment_item in comments:
+                    st.write(comment_item["content"])
+                    st.caption(f"By {comment_item['user_id']} at {comment_item['created_at']}")
+            else:
+                st.caption("No comments yet.")
 
 
 def render_history(client: ApiClient, task_id: str) -> None:
+    if not st.button("Load history", key=f"load-history-{task_id}"):
+        st.caption("History loads on demand.")
+        return
     response = safe_request("Loading history", lambda: client.task_history(task_id))
     if not response:
         return
@@ -130,6 +139,7 @@ def render_task_details(
                 )
                 if response and response.ok:
                     st.success("Task updated")
+                    st.session_state.force_data_refresh = True
                     st.rerun()
                 elif response:
                     st.error(response.text)
@@ -138,21 +148,24 @@ def render_task_details(
                 response = safe_request("Deleting task", lambda: client.delete_task(task_id))
                 if response and response.status_code == 204:
                     st.success("Task removed")
+                    st.session_state.force_data_refresh = True
                     st.rerun()
                 elif response:
                     st.error(response.text)
         return
 
+    valid_statuses = NEXT_STATUSES[str(task["status"])]
     status = st.selectbox(
         "Change status",
-        STATUSES,
-        index=STATUSES.index(str(task["status"])),
+        valid_statuses,
+        index=valid_statuses.index(str(task["status"])),
         key=f"status-worker-{task_id}",
     )
     if st.button("Update status", key=f"worker-status-{task_id}"):
         response = safe_request("Updating status", lambda: client.update_task(task_id, {"status": status}))
         if response and response.ok:
             st.success("Status updated")
+            st.session_state.force_data_refresh = True
             st.rerun()
         elif response:
             st.error(response.text)
@@ -180,17 +193,15 @@ def render_task(
             render_history(client, task_id)
 
 
-def render_task_list(client: ApiClient, is_admin: bool, worker_options: dict[str, str]) -> None:
+def render_task_list(
+    client: ApiClient,
+    tasks: list[dict[str, Any]],
+    is_admin: bool,
+    worker_options: dict[str, str],
+) -> None:
     st.subheader("Tasks")
-    status_filter = st.selectbox("Status filter", ["ALL", *STATUSES])
-    if st.button("Refresh tasks", use_container_width=True):
-        st.rerun()
-    response = safe_request("Loading tasks", lambda: client.list_tasks(status_filter))
-    if response and response.ok:
-        for task in response.json()["items"]:
-            render_task(client, task, is_admin, worker_options)
-    elif response:
-        st.error(response.text)
+    for task in tasks:
+        render_task(client, task, is_admin, worker_options)
 
 
 def render_create_task(client: ApiClient, worker_options: dict[str, str]) -> None:
@@ -215,6 +226,7 @@ def render_create_task(client: ApiClient, worker_options: dict[str, str]) -> Non
         )
         if response and response.ok:
             st.success("Created")
+            st.session_state.force_data_refresh = True
             st.rerun()
         elif response:
             st.error(response.text)

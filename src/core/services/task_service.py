@@ -62,12 +62,14 @@ class TaskService:
         if actor.role == UserRole.WORKER and task.assigned_to != actor.id:
             raise PermissionDeniedError("Workers can update only assigned tasks")
 
-        old_status = task.status
+        old_status = self._coerce_status(task.status)
         update_data = payload.model_dump(exclude_unset=True)
         if actor.role == UserRole.WORKER:
             update_data = {"status": update_data.get("status")} if "status" in update_data else {}
         new_status = update_data.get("status")
-        if isinstance(new_status, TaskStatus):
+        if new_status is not None:
+            new_status = self._coerce_status(new_status)
+            update_data["status"] = new_status
             self._validate_status_transition(old_status, new_status)
         for field, value in update_data.items():
             setattr(task, field, value)
@@ -117,3 +119,6 @@ class TaskService:
             raise PermissionDeniedError(
                 f"Invalid status transition: {old_status} cannot move to {new_status}"
             )
+
+    def _coerce_status(self, status: TaskStatus | str) -> TaskStatus:
+        return status if isinstance(status, TaskStatus) else TaskStatus(status)

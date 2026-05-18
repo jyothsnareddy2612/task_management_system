@@ -15,11 +15,13 @@ async def health(session: AsyncSession = Depends(get_db_session)) -> HealthRespo
     redis_status = "ok"
     try:
         await session.execute(text("SELECT 1"))
+        #classic Db liveness check
     except Exception:
         database = "degraded"
     try:
         redis = await get_redis()
         await redis.ping()
+        #Verifies:cache/realtime infrastructure alive.
     except Exception:
         redis_status = "degraded"
     status = "ok" if database == "ok" and redis_status == "ok" else "degraded"
