@@ -5,7 +5,8 @@ This service isolates register, login, refresh, Google OAuth, and `/me` into a s
 Run locally:
 
 ```powershell
-uvicorn src.auth_microservice.app:app --reload --port 8001
+Copy-Item auth/.env.example auth/.env
+uvicorn auth.app:app --reload --port 8001
 ```
 
 Routes:

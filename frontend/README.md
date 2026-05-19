@@ -6,7 +6,8 @@ This service is intentionally outside the backend `src/` package:
 
 ```text
 task_management_portal/
-├── src/          # Python backend services
+├── auth/         # Python auth microservice
+├── src/          # Python backend API service
 └── frontend/     # React frontend microservice
 ```
 
@@ -43,4 +44,5 @@ Environment variables:
 ```text
 VITE_API_BASE_URL=http://localhost:8000/api/v1
 VITE_AUTH_BASE_URL=http://localhost:8001/api/v1
+VITE_TASK_EVENTS_URL=ws://localhost:8000/api/v1/ws/tasks
 ```

@@ -34,6 +34,7 @@ export function TaskDetails({ canManage, onUpdate, task, users }: TaskDetailsPro
   const [status, setStatus] = useState<TaskStatus>(task.status);
   const [assignedTo, setAssignedTo] = useState(task.assigned_to ?? "");
   const [dueDate, setDueDate] = useState(toDateTimeLocal(task.due_date));
+  const userNameById = new Map(users.map((user) => [user.id, user.name]));
 
   useEffect(() => {
     void taskService.listComments(task.id).then(setComments);
@@ -133,9 +134,18 @@ export function TaskDetails({ canManage, onUpdate, task, users }: TaskDetailsPro
         {history.length === 0 ? <p>No status history yet.</p> : null}
         {history.map((item) => (
           <div className="history-item" key={item.id}>
-            <span>{item.old_status ? TASK_STATUS_LABELS[item.old_status] : "Created"}</span>
-            <strong>{TASK_STATUS_LABELS[item.new_status]}</strong>
-            <small>{formatDate(item.changed_at)}</small>
+            <span>
+              Old status <strong>{item.old_status ? TASK_STATUS_LABELS[item.old_status] : "Created"}</strong>
+            </span>
+            <span>
+              New status <strong>{TASK_STATUS_LABELS[item.new_status]}</strong>
+            </span>
+            <span>
+              Changed by <strong>{userNameById.get(item.changed_by) ?? item.changed_by}</strong>
+            </span>
+            <span>
+              Changed at <strong>{formatDate(item.changed_at)}</strong>
+            </span>
           </div>
         ))}
       </section>

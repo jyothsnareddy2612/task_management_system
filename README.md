@@ -10,6 +10,7 @@ uv pip install -r requirements/dev.txt
 Copy-Item .env.example .env
 uv run alembic upgrade head
 uv run uvicorn src.main:app --reload
+uv run uvicorn auth.app:app --reload --port 8001
 uv run streamlit run src/frontend/streamlit_app.py
 ```
 

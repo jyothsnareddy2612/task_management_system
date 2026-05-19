@@ -55,13 +55,15 @@ export function TaskCard({ canManage, onDelete, onStatusChange, onUpdate, task, 
         <Button icon={<Edit3 size={16} />} onClick={() => setIsExpanded((value) => !value)} type="button" variant="ghost">
           Details
         </Button>
-        <Button
-          aria-label={`Delete ${task.title}`}
-          icon={<Trash2 size={16} />}
-          onClick={() => onDelete(task.id)}
-          type="button"
-          variant="ghost"
-        />
+        {canManage ? (
+          <Button
+            aria-label={`Delete ${task.title}`}
+            icon={<Trash2 size={16} />}
+            onClick={() => onDelete(task.id)}
+            type="button"
+            variant="ghost"
+          />
+        ) : null}
       </div>
       {isExpanded ? <TaskDetails canManage={canManage} onUpdate={onUpdate} task={task} users={users} /> : null}
     </article>

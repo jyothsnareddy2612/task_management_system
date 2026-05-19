@@ -288,7 +288,11 @@ button {
   align-items: start;
   display: grid;
   gap: 22px;
-  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+}
+
+.dashboard-grid:has(.task-panel:first-child) {
+  grid-template-columns: 1fr;
 }
 
 .panel {
@@ -473,11 +477,10 @@ button {
 }
 
 .history-item {
-  align-items: center;
   display: grid;
   gap: 8px;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  padding: 8px 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 10px 0;
 }
 
 .history-item + .history-item {
@@ -486,10 +489,15 @@ button {
 
 .history-item span {
   color: #64717d;
+  display: grid;
+  font-size: 12px;
+  gap: 3px;
 }
 
 .history-item strong {
   color: #0f766e;
+  font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .empty-state {

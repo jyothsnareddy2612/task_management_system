@@ -59,10 +59,12 @@ export function TaskBoard() {
       />
 
       <section className="dashboard-grid">
-        <aside className="panel create-panel">
-          <h2>Create task</h2>
-          <TaskForm canAssign={canManage} onCreate={createTask} users={visibleUsers} />
-        </aside>
+        {canManage ? (
+          <aside className="panel create-panel">
+            <h2>Create task</h2>
+            <TaskForm canAssign={canManage} onCreate={createTask} users={visibleUsers} />
+          </aside>
+        ) : null}
 
         <section className="panel task-panel">
           <div className="task-toolbar">
