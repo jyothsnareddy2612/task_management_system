@@ -15,7 +15,7 @@ from src.observability.logging.config import configure_logging
 def create_app() -> FastAPI:
     configure_logging()
     settings = get_auth_settings()
-    app = FastAPI(title=f"{settings.app_name} Auth Service", version="0.1.0")
+    app = FastAPI(title=settings.app_name, version="0.1.0")
 
     app.add_middleware(
         CORSMiddleware,

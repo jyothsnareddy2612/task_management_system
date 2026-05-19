@@ -8,10 +8,25 @@ Production-grade async backend scaffold for task assignment, worker progress tra
 uv venv
 uv pip install -r requirements/dev.txt
 Copy-Item .env.example .env
+Copy-Item auth/.env.example auth/.env
+Copy-Item frontend/.env.example frontend/.env
 uv run alembic upgrade head
-uv run uvicorn src.main:app --reload
+```
+
+Run each service in a separate terminal:
+
+```powershell
+uv run uvicorn src.main:app --reload --port 8000
+```
+
+```powershell
 uv run uvicorn auth.app:app --reload --port 8001
-uv run streamlit run src/frontend/streamlit_app.py
+```
+
+```powershell
+cd frontend
+npm install
+npm run dev
 ```
 
 ## Google OAuth Login
