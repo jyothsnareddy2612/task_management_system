@@ -17,6 +17,6 @@ class HistoryRepository:
         result = await self.session.execute(
             select(TaskHistory)
             .where(TaskHistory.task_id == task_id)
-            .order_by(TaskHistory.changed_at.desc())
+            .order_by(TaskHistory.changed_at.desc()) #history shown newest-first
         )
         return list(result.scalars().all())

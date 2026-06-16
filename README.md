@@ -10,6 +10,7 @@ uv pip install -r requirements/dev.txt
 Copy-Item .env.example .env
 uv run alembic upgrade head
 uv run uvicorn src.main:app --reload
+uv run uvicorn auth.app:app --reload --port 8001
 uv run streamlit run src/frontend/streamlit_app.py
 ```
 
@@ -20,7 +21,7 @@ The app supports both normal email/password login and Google OAuth login.
 In Google Cloud Console, create an OAuth Client ID for a Web application and add this authorized redirect URI:
 
 ```text
-http://localhost:8000/api/v1/auth/google/callback
+http://localhost:8001/api/v1/auth/google/callback
 ```
 
 Then set these values in `.env`:
@@ -28,7 +29,8 @@ Then set these values in `.env`:
 ```text
 GOOGLE_OAUTH_CLIENT_ID=your-google-client-id
 GOOGLE_OAUTH_CLIENT_SECRET=your-google-client-secret
-GOOGLE_OAUTH_REDIRECT_URI=http://localhost:8000/api/v1/auth/google/callback
+GOOGLE_OAUTH_REDIRECT_URI=http://localhost:8001/api/v1/auth/google/callback
+OAUTH_SUCCESS_REDIRECT_URL=http://localhost:5173
 GOOGLE_ADMIN_EMAILS=["admin@example.com"]
 ```
 
@@ -37,7 +39,7 @@ Admin assignment is controlled by `GOOGLE_ADMIN_EMAILS`. Users whose verified Go
 Start login by opening:
 
 ```text
-http://localhost:8000/api/v1/auth/google/login
+http://localhost:8001/api/v1/auth/google/login
 ```
 
 After Google redirects back, the backend creates or finds a local `WORKER` user by verified email and returns the same JWT `access_token` and `refresh_token` used by protected APIs.

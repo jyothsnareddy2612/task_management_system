@@ -1,0 +1,1 @@
+"""Standalone authentication microservice package."""

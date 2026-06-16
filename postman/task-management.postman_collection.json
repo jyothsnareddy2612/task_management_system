@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "Task Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api/v1" },
+    { "key": "access_token", "value": "" },
+    { "key": "task_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Google Login",
+      "request": { "method": "GET", "url": "{{base_url}}/auth/google/login" }
+    },
+    {
+      "name": "Me",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{base_url}}/auth/me"
+      }
+    },
+    {
+      "name": "List Tasks",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{base_url}}/tasks"
+      }
+    },
+    {
+      "name": "Create Task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Demo task\",\"description\":\"Created from Postman\",\"priority\":\"MEDIUM\",\"assigned_to\":null}"
+        },
+        "url": "{{base_url}}/tasks"
+      }
+    },
+    {
+      "name": "Update Task Status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\"status\":\"IN_PROGRESS\"}" },
+        "url": "{{base_url}}/tasks/{{task_id}}"
+      }
+    },
+    {
+      "name": "Task History",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{base_url}}/tasks/{{task_id}}/history"
+      }
+    },
+    {
+      "name": "Add Comment",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\"content\":\"Postman comment\"}" },
+        "url": "{{base_url}}/tasks/{{task_id}}/comments"
+      }
+    }
+  ]
+}

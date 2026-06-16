@@ -15,7 +15,7 @@ class UserRepository:
 
     async def get_by_email(self, email: str) -> User | None:
         result = await self.session.execute(select(User).where(User.email == email.lower()))
-        return result.scalar_one_or_none()
+        return result.scalar_one_or_none() # 0 rows:None,1 row:return object >1:error
 
     async def list_active(self) -> list[User]:
         result = await self.session.execute(
@@ -25,5 +25,9 @@ class UserRepository:
 
     async def create(self, user: User) -> User:
         self.session.add(user)
-        await self.session.flush()
+        #add():adds object to session tracking system..it doesn't immediately insert into DB.
+        #tracking state consits of transient(only python memory),pending(still not committed),persistent(after flush/commit),detached
+        await self.session.flush() #sends SQL to DB without committing transaction
+        #flush is not equals to commit
         return user
+    

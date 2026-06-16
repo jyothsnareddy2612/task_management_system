@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 from src.api.middleware.auth import AuthContextMiddleware
 from src.api.middleware.error_handler import ErrorHandlerMiddleware
@@ -23,6 +25,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    #FastAPI middleware executes:reverse order
     app.add_middleware(ErrorHandlerMiddleware)
     app.add_middleware(MetricsMiddleware)
     app.add_middleware(AccessLogMiddleware)
@@ -38,5 +41,15 @@ def create_app() -> FastAPI:
     app.include_router(sse.router, prefix=api_prefix)
     app.include_router(websocket.router, prefix=api_prefix)
     app.add_api_route("/metrics", metrics_response, methods=["GET"], include_in_schema=False)
-    return app
 
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(
+        _: Request,
+        exc: RequestValidationError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=400,
+            content={"error": {"code": "validation_error", "message": "Invalid request", "details": exc.errors()}},
+        )
+
+    return app
