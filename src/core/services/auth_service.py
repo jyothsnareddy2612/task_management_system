@@ -134,6 +134,8 @@ class AuthService:
             raise AuthenticationError("Invalid OAuth provider")
 
     def _issue_tokens(self, user: User) -> TokenPair:
+        #acess token:short lived
+        #refresh token"long lived
         access = create_token(
             subject=user.id,
             role=str(user.role),
